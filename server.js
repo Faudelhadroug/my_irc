@@ -45,3 +45,5 @@ io.on('connection', (socket) => {
 app.use(router);
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Watching some tutorial about socket, react.
