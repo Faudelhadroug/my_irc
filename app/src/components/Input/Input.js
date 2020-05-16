@@ -3,8 +3,9 @@ import React from 'react';
 import './Input.css';
 
 const Input = ({ message, setMessage, sendMessage }) => (
-    <form>
+    <form className='d-flex justify-content-center mb-5'>
         <input 
+        className='chat-input'
         type="text"
         placeholder='Write a message..'
         value={message} 

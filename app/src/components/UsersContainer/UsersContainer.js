@@ -1,8 +1,8 @@
 import React from 'react';
 
-import './TextContainer.css';
+import './UsersContainer.css';
 
-const TextContainer = ({users}) => (
+const UsersContainer = ({users}) => (
     <div>
     {
         users
@@ -25,4 +25,4 @@ const TextContainer = ({users}) => (
     </div>
 );
 
-export default TextContainer;
+export default UsersContainer;
