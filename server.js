@@ -20,7 +20,7 @@ io.on('connection', (socket) => {
         socket.join(user.room);
 
         io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room)});
-        socket.emit('rooms', io.of('/').adapter.rooms); 
+        io.to(user.room).emit('rooms', io.of('/').adapter.rooms); 
         callback();
     });
     socket.on('sendMessage', (message, callback) => {

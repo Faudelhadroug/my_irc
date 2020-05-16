@@ -16,7 +16,6 @@ let memoRooms = [];
 const Chat = ({ location }) => {
     const [name, setName] = useState('');
     const [room, setRoom] = useState('');
-    const [rooms, setRooms] = useState([]);
     const [users, setUsers] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
@@ -34,8 +33,6 @@ const Chat = ({ location }) => {
                 alert(error);
                 window.location.replace("/");
             }
-        //setRooms([room]);
-
         });
 
         return () => {
@@ -58,20 +55,18 @@ const Chat = ({ location }) => {
     }, [messages, chatMessages]);
 
     useEffect(() => {
-        socket.on("rooms", (getRooms) => {
-            //console.log(rooms);
-            var allRooms = Object.entries(getRooms);
-            allRooms.forEach(function(room){
-                console.log(room[0]);
-                if(room[0] === room[0].toLowerCase())
-                {
-                    setRooms(room[0]);
-                    memoRooms.push(room[0]);
-                }          
-              });
-          });
-          console.log(memoRooms);
-    }, [rooms]);
+    socket.on("rooms", (getRooms) => {
+        var allRooms = Object.entries(getRooms);
+        allRooms.forEach(function(room){
+            console.log(room[0]);
+            if(room[0] === room[0].toLowerCase())
+            {
+                memoRooms.push(room[0]);
+            }          
+            });
+        });
+        
+    }, [server, memoRooms]);
     const sendMessage = (e) => {
         e.preventDefault();
 
@@ -87,7 +82,7 @@ const Chat = ({ location }) => {
                 <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
            </div>
            <UsersContainer users={users}/>
-           <RoomsContainer rooms={rooms}/>
+           <RoomsContainer rooms={memoRooms}/>
        </div>
     )
 }
