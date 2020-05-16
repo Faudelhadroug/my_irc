@@ -5,10 +5,10 @@ import './InfoBar.css';
 const InfoBar = ({ room }) => (
     <div>
         <div>
-            <h3>{ room }</h3>
+            <h3 className='d-flex justify-content-center mt-5'>Actual room: { room }</h3>
         </div>
-        <div>
-            <a href='/'>Close</a>
+        <div className='d-flex justify-content-center'>
+            <a href='/'>Leave room</a>
         </div>
     </div>
 );

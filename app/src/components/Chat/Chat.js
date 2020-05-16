@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
 import queryString from 'query-string';
 import io from 'socket.io-client';
 
@@ -18,8 +17,8 @@ const Chat = ({ location }) => {
     const [users, setUsers] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
-    const [redirect, setRedirect] = useState(true);
     const server = 'localhost:5000';
+    const chatMessages = document.querySelector('.chat-messages');
     useEffect(() => {
         const {name, room} = queryString.parse(location.search)
 
@@ -43,8 +42,15 @@ const Chat = ({ location }) => {
     }, [server, location.search])
 
     useEffect(() => {
+        //console.log(chatMessages.scrollTop);
         socket.on('message', (message) => {
             setMessages([...messages, message]);
+
+            console.log(chatMessages);
+                if(chatMessages !== null)
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+                
         });
 
         socket.on("roomData", ({ users }) => {

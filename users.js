@@ -8,6 +8,9 @@ const addUser = ({ id, name, room}) => {
     if(existingUser) {
         return { error: 'Username is taken'};
     }
+    else if (name === 'admin') {
+        return { error: 'Username \'Admin\' is not avaible !'};
+    }
     const user = { id, name, room };
     users.push(user);
     return { user };
