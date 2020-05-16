@@ -11,6 +11,7 @@ import UsersContainer from '../UsersContainer/UsersContainer';
 import RoomsContainer from '../RoomsContainer/RoomsContainer';
 
 let socket;
+let memoRooms = [];
 
 const Chat = ({ location }) => {
     const [name, setName] = useState('');
@@ -33,7 +34,7 @@ const Chat = ({ location }) => {
                 alert(error);
                 window.location.replace("/");
             }
-        setRooms([room]);
+        //setRooms([room]);
 
         });
 
@@ -57,16 +58,19 @@ const Chat = ({ location }) => {
     }, [messages, chatMessages]);
 
     useEffect(() => {
-        socket.on("rooms", (rooms) => {
-            console.log(rooms);
-            const objectMap = (obj, fn) =>
-            Object.fromEntries(
-              Object.entries(obj).map(
-                ([k, v], i) => [k, fn(v, k, i)]
-              )
-            )
-                setRooms(rooms);
+        socket.on("rooms", (getRooms) => {
+            //console.log(rooms);
+            var allRooms = Object.entries(getRooms);
+            allRooms.forEach(function(room){
+                console.log(room[0]);
+                if(room[0] === room[0].toLowerCase())
+                {
+                    setRooms(room[0]);
+                    memoRooms.push(room[0]);
+                }          
+              });
           });
+          console.log(memoRooms);
     }, [rooms]);
     const sendMessage = (e) => {
         e.preventDefault();

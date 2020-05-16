@@ -7,7 +7,7 @@ import './RoomsContainer.css';
   return (
     <div>
     {
-        rooms
+        rooms.length <= 1
           ? (
             <div>
               <h1>Rooms online</h1>
@@ -22,7 +22,16 @@ import './RoomsContainer.css';
               </div>
             </div>
           )
-          : null
+          : (
+            <div>
+              <h1>Rooms online</h1>
+              <div>
+                <h2>
+                  {rooms}
+                </h2>
+              </div>
+            </div>
+          )
       }
     </div>
   );
