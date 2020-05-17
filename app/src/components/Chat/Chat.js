@@ -11,7 +11,6 @@ import UsersContainer from '../UsersContainer/UsersContainer';
 import RoomsContainer from '../RoomsContainer/RoomsContainer';
 
 let socket;
-
 const Chat = ({ location }) => {
     const [name, setName] = useState('');
     const [room, setRoom] = useState('');
@@ -56,15 +55,6 @@ const Chat = ({ location }) => {
         socket.on("rooms", (rooms) => {
             setRooms(rooms)
         });
-        // socket.on("rooms", (getRooms) => {
-        //     var allRooms = Object.entries(getRooms);
-        //     allRooms.forEach(function(room){
-        //         if(room[0] === room[0].toLowerCase())
-        //         {
-        //             memoRooms.push(room[0]);
-        //         }          
-        //     });
-        // });
         console.log('im here ', rooms)
     }, [rooms]);
     

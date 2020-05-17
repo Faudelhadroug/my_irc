@@ -2,14 +2,13 @@ import React from 'react';
 
 import './RoomsContainer.css';
 
- const RoomsContainer = ({rooms}) => {console.log(rooms);
-  return (
+ const RoomsContainer = ({rooms}) => (
     <div>
     {
         rooms
           ? (
             <div>
-              <h1>Rooms online</h1>
+              <h1>Rooms avaible</h1>
               <div>
                 <h2>
                 {rooms.map((room, i) => (
@@ -21,10 +20,19 @@ import './RoomsContainer.css';
               </div>
             </div>
           )
-          : null
+          : (
+            <div>
+              <h1>Rooms avaible</h1>
+              <div>
+                <h2>
+                  
+                </h2>
+              </div>
+            </div>
+          )
       }
     </div>
-  )};
+  );
 
 
 export default RoomsContainer;
