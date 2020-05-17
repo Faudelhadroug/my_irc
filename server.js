@@ -36,7 +36,6 @@ io.on('connection', (socket) => {
     socket.on('getRooms', (callback) => {
         const setRooms = new Set(putRooms);
         const rooms = [...setRooms];
-        console.log(rooms);
         io.sockets.emit('rooms',  rooms)
         callback();
     });
@@ -44,7 +43,14 @@ io.on('connection', (socket) => {
         const user = removeUser(socket.id);
 
         if(user){
+            const inRoom = getUsersInRoom(user.room);
+                var index = putRooms.indexOf(user.room);
+                if (index !== -1) putRooms.splice(index, 1);
+            
             io.to(user.room).emit('message', { user: 'admin', text: `${user.name} has left`});
+            const setRooms = new Set(putRooms);
+            const rooms = [...setRooms];
+            io.sockets.emit('rooms',  rooms)
         }
     });
 });
