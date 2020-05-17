@@ -11,11 +11,11 @@ import UsersContainer from '../UsersContainer/UsersContainer';
 import RoomsContainer from '../RoomsContainer/RoomsContainer';
 
 let socket;
-let memoRooms = [];
 
 const Chat = ({ location }) => {
     const [name, setName] = useState('');
     const [room, setRoom] = useState('');
+    const [rooms, setRooms] = useState('');
     const [users, setUsers] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
@@ -34,7 +34,6 @@ const Chat = ({ location }) => {
                 window.location.replace("/");
             }
         });
-
         return () => {
             socket.emit('disconnect');
             socket.off();
@@ -47,26 +46,28 @@ const Chat = ({ location }) => {
             if(chatMessages !== null)
                 chatMessages.scrollTop = chatMessages.scrollHeight;
         });
-
         socket.on("roomData", ({ users }) => {
             setUsers(users);
-          });
-          
+        });
+        
     }, [messages, chatMessages]);
 
     useEffect(() => {
-    socket.on("rooms", (getRooms) => {
-        var allRooms = Object.entries(getRooms);
-        allRooms.forEach(function(room){
-            console.log(room[0]);
-            if(room[0] === room[0].toLowerCase())
-            {
-                memoRooms.push(room[0]);
-            }          
-            });
+        socket.on("rooms", (rooms) => {
+            setRooms(rooms)
         });
-        
-    }, [server, memoRooms]);
+        // socket.on("rooms", (getRooms) => {
+        //     var allRooms = Object.entries(getRooms);
+        //     allRooms.forEach(function(room){
+        //         if(room[0] === room[0].toLowerCase())
+        //         {
+        //             memoRooms.push(room[0]);
+        //         }          
+        //     });
+        // });
+        console.log('im here ', rooms)
+    }, [rooms]);
+    
     const sendMessage = (e) => {
         e.preventDefault();
 
@@ -74,6 +75,7 @@ const Chat = ({ location }) => {
             socket.emit('sendMessage', message, () => setMessage(''));
         }
     }
+
     return (
        <div>
            <div>
@@ -82,7 +84,7 @@ const Chat = ({ location }) => {
                 <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
            </div>
            <UsersContainer users={users}/>
-           <RoomsContainer rooms={memoRooms}/>
+           <RoomsContainer rooms={rooms}/>
        </div>
     )
 }

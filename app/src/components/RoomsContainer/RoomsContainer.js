@@ -2,8 +2,7 @@ import React from 'react';
 
 import './RoomsContainer.css';
 
- const RoomsContainer = ({rooms}) => {
-   console.log(rooms)
+ const RoomsContainer = ({rooms}) => {console.log(rooms);
   return (
     <div>
     {
@@ -13,8 +12,8 @@ import './RoomsContainer.css';
               <h1>Rooms online</h1>
               <div>
                 <h2>
-                  {rooms.map((room, i) => (
-                    <div key={room + i}>
+                {rooms.map((room, i) => (
+                    <div key={i*218+room}>
                       {room}
                     </div>
                   ))}
@@ -25,8 +24,7 @@ import './RoomsContainer.css';
           : null
       }
     </div>
-  );
- }
+  )};
 
 
 export default RoomsContainer;
