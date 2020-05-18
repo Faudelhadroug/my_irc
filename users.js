@@ -1,12 +1,4 @@
 const users = [];
-const putRooms = [];
-
-const getRooms = () => {
-
-    const setRooms = new Set(putRooms);
-    const rooms = [...setRooms];
-    return rooms;
-};
 
 const addUser = ({ id, name, room}) => {
     name = name.trim().toLowerCase();
@@ -21,7 +13,6 @@ const addUser = ({ id, name, room}) => {
     }
     const user = { id, name, room };
     users.push(user);
-    putRooms.push(room);
     return { user };
 };
 
@@ -37,4 +28,4 @@ const getUser = (id) => users.find((user) => user.id === id);
 
 const getUsersInRoom = (room) => users.filter((user) => user.room === room);
 
-module.exports = { addUser, removeUser, getUser, getUsersInRoom, getRooms };
+module.exports = { addUser, removeUser, getUser, getUsersInRoom };

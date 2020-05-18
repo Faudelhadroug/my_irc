@@ -9,6 +9,7 @@ import Input from '../Input/Input';
 import Messages from '../Messages/Messages';
 import UsersContainer from '../UsersContainer/UsersContainer';
 import RoomsContainer from '../RoomsContainer/RoomsContainer';
+import ChangeUsername from '../ChangeUsername/ChangeUsername';
 
 let socket;
 const Chat = ({ location }) => {
@@ -21,10 +22,10 @@ const Chat = ({ location }) => {
     const server = 'localhost:5000';
     const chatMessages = document.querySelector('.chat-messages');
     useEffect(() => {
+        
         const {name, room} = queryString.parse(location.search)
 
-        socket = io(server);
-
+        socket = io(server, {transports:['websocket']});
         setName(name);
         setRoom(room);
         socket.emit('join', { name, room }, (error) => {
@@ -34,10 +35,11 @@ const Chat = ({ location }) => {
             }
         });
         return () => {
+            document.location.reload(true);
             socket.emit('disconnect');
             socket.off();
         }
-    }, [server, location.search])
+    }, [server, location.search]);
 
     useEffect(() => {
         socket.on('message', (message) => {
@@ -55,7 +57,6 @@ const Chat = ({ location }) => {
         socket.on("rooms", (rooms) => {
             setRooms(rooms)
         });
-        console.log('im here ', rooms)
     }, [rooms]);
     
     const sendMessage = (e) => {
@@ -65,16 +66,16 @@ const Chat = ({ location }) => {
             socket.emit('sendMessage', message, () => setMessage(''));
         }
     }
-
     return (
        <div>
            <div>
-                <InfoBar room={room}/>
-                <Messages messages={messages} name={name}/>
+                <ChangeUsername name={name} room={room} />
+                <InfoBar room={room} />
+                <Messages messages={messages} name={name} />
                 <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
            </div>
-           <UsersContainer users={users}/>
-           <RoomsContainer rooms={rooms}/>
+           <UsersContainer users={users} />
+           <RoomsContainer rooms={rooms} />
        </div>
     )
 }

@@ -14,21 +14,15 @@ const Join = () => {
     const server = 'localhost:5000';
     useEffect(() => {
         socket = io(server);
-        console.log('server');
         socket.emit('getRooms', () => '');
     }, [server]);
 
     useEffect(() => {
         socket.on("rooms", (rooms) => {
             setRooms(rooms)
-            console.log(rooms);
         });
-        
-        console.log(rooms);
     }, [rooms]);
     
-    //socket.emit('getRooms', () => setRooms(''));
-    console.log(rooms);
     return (
         <div>
             <div className='mb-5'>
