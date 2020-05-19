@@ -71,7 +71,7 @@ const Chat = ({ location }) => {
        <div>
            <div>
                 <ChangeUsername name={name} room={room} />
-                <CreateChannel server={server} />
+                <CreateChannel server={server} rooms={room}/>
                 <InfoBar room={room} />
                 <Messages messages={messages} name={name} />
                 <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
