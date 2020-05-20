@@ -8,7 +8,6 @@ let socket;
 
 const CreateChannel = ({server, rooms}) =>{
     const [newRoom, setNewRoom] = useState('');
-    console.log(rooms);
     const name = queryString.parse(window.location.search)['name']
     const clickCreate = () => {
         var room = newRoom;

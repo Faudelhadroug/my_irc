@@ -48,12 +48,19 @@ const Chat = ({ location }) => {
             if(chatMessages !== null)
                 chatMessages.scrollTop = chatMessages.scrollHeight;
         });
-        socket.on("roomData", ({ users }) => {
+        socket.on("roomData", ({ users}) => {
             setUsers(users);
         });
-        
     }, [messages, chatMessages]);
+    useEffect(() => {
+        socket.on("deleteRoom", () => {
 
+            alert('Creator of the room deleted him');
+            document.location.reload(true);
+            window.location.replace('/');
+            
+        });
+    }, []);
     useEffect(() => {
         socket.on("rooms", (rooms) => {
             setRooms(rooms)
@@ -72,7 +79,7 @@ const Chat = ({ location }) => {
            <div>
                 <ChangeUsername name={name} room={room} />
                 <CreateChannel server={server} rooms={room}/>
-                <InfoBar room={room} />
+                <InfoBar room={room} users={users} name={name} server={server} />
                 <Messages messages={messages} name={name} />
                 <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
            </div>
