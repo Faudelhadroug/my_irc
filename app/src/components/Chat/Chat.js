@@ -45,8 +45,6 @@ const Chat = ({ location }) => {
 
     useEffect(() => {
         socket.on('message', (message) => {
-            console.log(room);
-            console.log(message);
             setMessages([...messages, message]);
             if(chatMessages !== null)
                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -57,24 +55,25 @@ const Chat = ({ location }) => {
     }, [messages, chatMessages]);
     useEffect(() => {
         socket.on("deleteRoom", () => {
-
+            socket.emit('leaveRoom', () => room);
             alert('Creator of the room deleted him');
             document.location.reload(true);
             window.location.replace('/');
         });
 
-        socket.on("renameRoom", (renamedRoom) => {
+        socket.on("renameRoom", (renamedRoom, oldRoom) => {
             for (let i = rooms.length - 1; i >= 0; i--) {
                 if (rooms[i] === room) {
                     rooms.splice(i, 1);
                     rooms.push(renamedRoom);
                     socket.emit('getRooms', () => '');
                 }
+                socket.emit('leaveRoom', oldRoom);    
+                socket.emit('joinRoom', renamedRoom);
               }
               setRoom(renamedRoom);
             //window.location.replace(`/chat?name=${name}&room=${renamedRoom}`);
         });
-        
     }, [room, rooms]);
     useEffect(() => {
         socket.on("rooms", (rooms) => {
@@ -89,7 +88,7 @@ const Chat = ({ location }) => {
             socket.emit('sendMessage', message, () => setMessage(''));
         }
     }
-    console.log(room);
+
     return (
        <div>
            <div>

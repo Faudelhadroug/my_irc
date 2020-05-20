@@ -52,8 +52,9 @@ io.on('connection', (socket) => {
         io.sockets.emit('rooms',  rooms);
         callback();
     });
+
     socket.on('addChannel', ({name, room}, callback) => {
-        const findId = usersOnServers.find(user => user.name === name);
+        const findId = usersOnServers.find(user => user.name.trim().toLowerCase() === name.trim().toLowerCase());
         const { error, user } = addUser({ id: findId.id, name, room});
         if(error) return callback(error);
         if(putRooms.includes(user.room) === false)
@@ -68,7 +69,6 @@ io.on('connection', (socket) => {
         }
         socket.emit('message', {user: 'admin', text: `${user.name}, welcome to the room ${user.room}`});
         socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name}, has joined`});
-        socket.join(user.room);
         putRooms.push(user.room);
         const setRooms = new Set(putRooms);
         const rooms = [...setRooms];
@@ -78,7 +78,9 @@ io.on('connection', (socket) => {
         io.sockets.emit('rooms',  rooms);
         callback();
     });
+
     socket.on('sendMessage', (message, callback) => {
+       // console.log(io.sockets.adapter.rooms);
         const find = usersOnServers.find(user => user.id === socket.id);
         const user = find;
         socket.id = user.id;
@@ -91,15 +93,17 @@ io.on('connection', (socket) => {
         io.sockets.emit('rooms',  rooms);
         callback();
     });
+
     socket.on('getRooms', (callback) => {
         const setRooms = new Set(putRooms);
         const rooms = [...setRooms];
         io.sockets.emit('rooms',  rooms)
         callback();
     });
-    socket.on('renameChannel', ({room, newNameRoom}, callback) => {
 
-        io.to(room).emit('renameRoom', newNameRoom);
+    socket.on('renameChannel', ({room, newNameRoom}, callback) => {
+       
+        io.to(room).emit('renameRoom', newNameRoom, room);
         socket.broadcast.to(room).emit('message', { user: 'admin', text: `The room '${room}' has been renamed as '${newNameRoom}' !!`});
         for (let i = putRooms.length - 1; i >= 0; i--) {
             if (putRooms[i] === room) {
@@ -110,10 +114,11 @@ io.on('connection', (socket) => {
         var usersRoom = [];
         usersOnServers.forEach((el) => el.room === newNameRoom ?  usersRoom.push(el) : null );
         io.to(room).emit('roomData', { room: newNameRoom, users: usersRoom });
-        socket.join(newNameRoom);
-        callback();
+        io.to(room).emit('updateRoom', room, newNameRoom);
        
+        callback();
     });
+
     socket.on('deleteChannel', ({room}, callback) => {
 
         io.to(room).emit('deleteRoom');
@@ -124,6 +129,15 @@ io.on('connection', (socket) => {
             }
           }
         callback();
+       
+    });
+    socket.on('leaveRoom', (room) => {
+        console.log(room)
+        socket.leave(room);
+    });
+    socket.on('joinRoom', (room) => {
+        console.log(room);
+        socket.join(room);
        
     });
     socket.on('disconnect', () => {
@@ -139,6 +153,7 @@ io.on('connection', (socket) => {
             io.sockets.emit('rooms',  rooms)
         }
     });
+    
 });
 
 app.use(router);

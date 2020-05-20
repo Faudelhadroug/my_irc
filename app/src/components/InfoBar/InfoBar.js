@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
 import './InfoBar.css';
@@ -15,7 +15,6 @@ const InfoBar = ({ room, rooms, users, name, server }) => {
             if(error) {
                 alert(error);
             }
-            socket.emit('disconnect');
         });
     }
     const changeNameRoom = () => {
@@ -37,7 +36,6 @@ const InfoBar = ({ room, rooms, users, name, server }) => {
                         alert(error);
                     }
                 });
-                socket.emit('disconnect');
                 setNewNameRoom('');
                 var inputRenameRoom = document.getElementById('renameRoomInput').value='';
             }
@@ -45,6 +43,10 @@ const InfoBar = ({ room, rooms, users, name, server }) => {
         }
 
     }
+    useEffect(() => {
+
+
+    }, [newNameRoom])
     var admin = false;
     for (let i = 0; i < users.length; i++) {
 
