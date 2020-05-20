@@ -1,8 +1,13 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import io from 'socket.io-client';
 
 import './RoomsContainer.css';
 
- const RoomsContainer = ({rooms}) => (
+let socket;
+
+const RoomsContainer = ({ rooms }) => { 
+
+  return (
     <div>
     {
         rooms
@@ -32,7 +37,7 @@ import './RoomsContainer.css';
           )
       }
     </div>
-  );
+  )};
 
 
 export default RoomsContainer;

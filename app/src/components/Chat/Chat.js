@@ -22,6 +22,7 @@ const Chat = ({ location }) => {
     const [messages, setMessages] = useState([]);
     const server = 'localhost:5000';
     const chatMessages = document.querySelector('.chat-messages');
+    const renamedRoom = false;
     useEffect(() => {
         
         const {name, room} = queryString.parse(location.search)
@@ -44,6 +45,8 @@ const Chat = ({ location }) => {
 
     useEffect(() => {
         socket.on('message', (message) => {
+            console.log(room);
+            console.log(message);
             setMessages([...messages, message]);
             if(chatMessages !== null)
                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -58,9 +61,21 @@ const Chat = ({ location }) => {
             alert('Creator of the room deleted him');
             document.location.reload(true);
             window.location.replace('/');
-            
         });
-    }, []);
+
+        socket.on("renameRoom", (renamedRoom) => {
+            for (let i = rooms.length - 1; i >= 0; i--) {
+                if (rooms[i] === room) {
+                    rooms.splice(i, 1);
+                    rooms.push(renamedRoom);
+                    socket.emit('getRooms', () => '');
+                }
+              }
+              setRoom(renamedRoom);
+            //window.location.replace(`/chat?name=${name}&room=${renamedRoom}`);
+        });
+        
+    }, [room, rooms]);
     useEffect(() => {
         socket.on("rooms", (rooms) => {
             setRooms(rooms)
@@ -74,12 +89,13 @@ const Chat = ({ location }) => {
             socket.emit('sendMessage', message, () => setMessage(''));
         }
     }
+    console.log(room);
     return (
        <div>
            <div>
                 <ChangeUsername name={name} room={room} />
                 <CreateChannel server={server} rooms={room}/>
-                <InfoBar room={room} users={users} name={name} server={server} />
+                <InfoBar room={room} rooms={rooms} users={users} name={name} server={server} />
                 <Messages messages={messages} name={name} />
                 <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
            </div>

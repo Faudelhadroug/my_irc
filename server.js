@@ -50,7 +50,6 @@ io.on('connection', (socket) => {
         usersOnServers.forEach((el) => el.room === user.room ?  usersRoom.push(el) : null );
         io.to(user.room).emit('roomData', { room: user.room, users: usersRoom });
         io.sockets.emit('rooms',  rooms);
-        //console.log(usersOnServers);
         callback();
     });
     socket.on('addChannel', ({name, room}, callback) => {
@@ -77,12 +76,12 @@ io.on('connection', (socket) => {
         usersOnServers.forEach((el) => el.room === user.room ?  usersRoom.push(el) : null );
         io.to(user.room).emit('roomData', { room: user.room, users: usersRoom});
         io.sockets.emit('rooms',  rooms);
-        console.log(usersOnServers);
         callback();
     });
     socket.on('sendMessage', (message, callback) => {
-        const user = getUser(socket.id);
-        console.log(user)
+        const find = usersOnServers.find(user => user.id === socket.id);
+        const user = find;
+        socket.id = user.id;
         var usersRoom = [];
         usersOnServers.forEach((el) => el.room === user.room ?  usersRoom.push(el) : null );
         io.to(user.room).emit('message', { user: user.name, text: message});
@@ -98,18 +97,33 @@ io.on('connection', (socket) => {
         io.sockets.emit('rooms',  rooms)
         callback();
     });
+    socket.on('renameChannel', ({room, newNameRoom}, callback) => {
+
+        io.to(room).emit('renameRoom', newNameRoom);
+        socket.broadcast.to(room).emit('message', { user: 'admin', text: `The room '${room}' has been renamed as '${newNameRoom}' !!`});
+        for (let i = putRooms.length - 1; i >= 0; i--) {
+            if (putRooms[i] === room) {
+              putRooms[i] = newNameRoom.trim().toLowerCase();
+            }
+          }
+        usersOnServers.forEach((el) => el.room === room ?  el.room = newNameRoom.trim().toLowerCase() : null );
+        var usersRoom = [];
+        usersOnServers.forEach((el) => el.room === newNameRoom ?  usersRoom.push(el) : null );
+        io.to(room).emit('roomData', { room: newNameRoom, users: usersRoom });
+        socket.join(newNameRoom);
+        callback();
+       
+    });
     socket.on('deleteChannel', ({room}, callback) => {
 
         io.to(room).emit('deleteRoom');
-        // usersOnServers.filter(obj => { obj.room === room ?})
 
         for (let i = putRooms.length - 1; i >= 0; i--) {
             if (putRooms[i] === room) {
               putRooms.splice(i, 1);
             }
           }
-        //   console.log(user);
-        // io.to(user.room).emit('message',  callback(alert('admin close this channel')));
+        callback();
        
     });
     socket.on('disconnect', () => {

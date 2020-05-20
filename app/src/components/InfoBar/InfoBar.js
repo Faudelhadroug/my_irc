@@ -1,11 +1,13 @@
-import React, { useEffect }from 'react';
+import React, { useState } from 'react';
 import io from 'socket.io-client';
 
 import './InfoBar.css';
 
 let socket;
 
-const InfoBar = ({ room, users, name, server }) => {
+const InfoBar = ({ room, rooms, users, name, server }) => {
+    const [newNameRoom, setNewNameRoom] = useState('');
+
     socket = io(server, {transports:['websocket']});
 
     const deleteRoom = () => {
@@ -13,10 +15,35 @@ const InfoBar = ({ room, users, name, server }) => {
             if(error) {
                 alert(error);
             }
+            socket.emit('disconnect');
         });
     }
     const changeNameRoom = () => {
-       
+
+        if(newNameRoom === '')
+        {
+            alert('can\'t be avoid')
+        }
+        else
+        {
+            if(rooms.indexOf(newNameRoom) !== -1)
+            {
+                alert('this room already exist !')
+            }
+            else
+            {
+                socket.emit('renameChannel', { room, newNameRoom } , (error) => {
+                    if(error) {
+                        alert(error);
+                    }
+                });
+                socket.emit('disconnect');
+                setNewNameRoom('');
+                var inputRenameRoom = document.getElementById('renameRoomInput').value='';
+            }
+            
+        }
+
     }
     var admin = false;
     for (let i = 0; i < users.length; i++) {
@@ -35,7 +62,7 @@ const InfoBar = ({ room, users, name, server }) => {
             </div>
             <div>
                 <h4>Settings of the room</h4>
-                <div><button onClick={changeNameRoom}>Change name of the room</button></div>
+                <div><label className='mr-3' htmlFor="NewNameRoom">Rename room:</label><input name="NewNameRoom" id='renameRoomInput' type='text' onChange={(e) => setNewNameRoom(e.target.value)} /><button onClick={changeNameRoom}>Change name of the room</button></div>
                 <div><button onClick={deleteRoom}>Delete</button></div>
             </div>
             <div className='d-flex justify-content-center'>
