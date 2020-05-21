@@ -22,12 +22,13 @@ io.on('connection', (socket) => {
         const found = usersOnServers.some(user => user.name === name);
         if (found === false  && putRooms.includes(user.room) === true)
         {
-            io.emit('message', {user: 'admin', text: `the room '${user.room}' get created`});
+          
             myUser = {id: socket.id, name: name.trim().toLowerCase(), room: room.trim().toLowerCase(), admin: false}
             usersOnServers.push(myUser);
         }
         else if (found === false && putRooms.includes(user.room) === false )
         {
+            io.emit('message', {user: 'admin', text: `the room '${user.room}' get created`});
             myUser = {id: socket.id, name: name.trim().toLowerCase(), room: room.trim().toLowerCase(), admin: true}
             usersOnServers.push(myUser);
         }
@@ -56,8 +57,10 @@ io.on('connection', (socket) => {
 
     socket.on('addChannel', ({name, room}, callback) => {
         const find = usersOnServers.find(user => user.name.trim().toLowerCase() === name.trim().toLowerCase());
-        if(putRooms.includes(find.room) === false)
+        console.log(name);
+        if(putRooms.includes(room) === false)
         {
+            io.emit('message', {user: 'admin', text: `the room '${room}' get created`});
             myUser = {id: find.id, name: find.name.trim().toLowerCase(), room: room.trim().toLowerCase(), admin: true}
             usersOnServers.push(myUser);
         }
@@ -66,8 +69,6 @@ io.on('connection', (socket) => {
             myUser = {id: find.id, name: find.name.trim().toLowerCase(), room: room.trim().toLowerCase(), admin: false}
             usersOnServers.push(myUser);
         }
-        io.emit('message', {user: 'admin', text: `the room '${room}' get created`});
-        socket.emit('message', {user: 'admin', text: `${find.name}, welcome to the room ${room}`});
         socket.broadcast.to(room).emit('message', { user: 'admin', text: `${find.name}, has joined`});
         putRooms.push(room);
         const setRooms = new Set(putRooms);
@@ -104,7 +105,7 @@ io.on('connection', (socket) => {
     socket.on('renameChannel', ({room, newNameRoom}, callback) => {
        
         io.to(room).emit('renameRoom', newNameRoom, room);
-        socket.broadcast.to(room).emit('message', { user: 'admin', text: `The room '${room}' has been renamed as '${newNameRoom}' !!`});
+        io.emit('message', { user: 'admin', text: `The room '${room}' has been renamed as '${newNameRoom}' !!`});
         for (let i = putRooms.length - 1; i >= 0; i--) {
             if (putRooms[i] === room) {
               putRooms[i] = newNameRoom.trim().toLowerCase();
@@ -119,8 +120,13 @@ io.on('connection', (socket) => {
         callback();
     });
 
-    socket.on('renameUser', ({room , name, newName}, callback) => {
-
+    socket.on('renameUser', ({name, newName}, callback) => {
+        usernametaken = false;
+        usersOnServers.forEach((el) => el.name.trim().toLowerCase() === newName.trim().toLowerCase() ?  usernametaken = true : null );
+        if(usernametaken === true)
+        {
+            return callback('username already taken') 
+        }
         usersOnServers.forEach((el) => el.name === name.trim().toLowerCase() ?  el.name = newName.trim().toLowerCase() : null );
         io.emit('message', {user: 'admin', text: `${name} renamed himself to ${newName}`});
         usersOnServers.forEach( (el) => {

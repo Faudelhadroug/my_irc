@@ -105,13 +105,13 @@ const Chat = ({ location }) => {
     return (
        <div>
            <div>
-                <ChangeUsername name={name} room={room} server={server} />
-                <CreateChannel server={server} rooms={room} />
-                <InfoBar room={room} rooms={rooms} users={users} name={name} server={server} />
+                <ChangeUsername name={name} room={room} socket={socket} />
+                <CreateChannel rooms={room} socket={socket}/>
+                <InfoBar room={room} rooms={rooms} users={users} name={name} socket={socket} />
                 <Messages messages={messages} name={name} />
                 <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
            </div>
-           <UsersContainer users={users} />
+           <UsersContainer users={users} /> 
            <RoomsContainer rooms={rooms} />
        </div>
     )

@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-import io from 'socket.io-client';
 
 import './ChangeUsername.css';
 
-let socket
 
-const ChangeUsername = ({ name, room, server }) => {
+const ChangeUsername = ({ name, room, socket }) => {
 
-    socket = io(server, {transports:['websocket']});
     const [newName, setNewName] = useState('');
     const renameUser = () => {
-        socket.emit('renameUser', { room, name, newName } , (error) => {
+        socket.emit('renameUser', { room, name, newName }, (error) => {
             if(error) {
                 alert(error);
             }

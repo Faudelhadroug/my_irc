@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
 import queryString from 'query-string';
-import io from 'socket.io-client';
 
 import './CreateChannel.css';
 
-let socket;
-
-const CreateChannel = ({server, rooms}) =>{
+const CreateChannel = ({rooms, socket}) =>{
     const [newRoom, setNewRoom] = useState('');
     const name = queryString.parse(window.location.search)['name']
     const clickCreate = () => {
         var room = newRoom;
-        socket = io(server, {transports:['websocket']});
         socket.emit('addChannel', { name, room } , (error) => {
             if(error) {
                 alert(error);

@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client';
 
 import './InfoBar.css';
 
-let socket;
-
-const InfoBar = ({ room, rooms, users, name, server }) => {
+const InfoBar = ({ room, rooms, users, name, socket }) => {
     const [newNameRoom, setNewNameRoom] = useState('');
-
-    socket = io(server, {transports:['websocket']});
 
     const deleteRoom = () => {
         socket.emit('deleteChannel', { room } , (error) => {
