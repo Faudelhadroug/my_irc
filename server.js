@@ -167,7 +167,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('leaveRoom', (room) => {
-        // console.log(room)
+        console.log(room)
         socket.leave(room);
     });
 

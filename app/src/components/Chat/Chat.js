@@ -22,7 +22,23 @@ const Chat = ({ location }) => {
     const [messages, setMessages] = useState([]);
     const server = 'localhost:5000';
     const chatMessages = document.querySelector('.chat-messages');
-
+    const [seconds, setSeconds] = useState(0);
+    if(seconds === 300)
+    {
+        socket.emit('deleteChannel', { room } , (error) => {
+            if(error) {
+                alert(error);
+            }
+        });
+    }
+    useEffect(() => {
+        let interval = null;
+        interval = setInterval(() => {
+            setSeconds(seconds => seconds + 1);
+        }, 1000);
+        return () => clearInterval(interval);
+      }, [seconds]);
+      console.log(seconds);
     useEffect(() => {
         
         const {name, room} = queryString.parse(location.search)
@@ -52,12 +68,6 @@ const Chat = ({ location }) => {
     }, [messages, chatMessages]);
 
     useEffect(() => {
-        socket.on("deleteRoom", () => {
-            socket.emit('leaveRoom', () => room);
-            alert('Creator of the room deleted him');
-            document.location.reload(true);
-            window.location.replace('/');
-        });
 
         socket.on("renameRoom", (renamedRoom, oldRoom) => {
             for (let i = rooms.length - 1; i >= 0; i--) {
@@ -73,6 +83,16 @@ const Chat = ({ location }) => {
             //window.location.replace(`/chat?name=${name}&room=${renamedRoom}`);
         });
     }, [room, rooms]);
+
+    useEffect(() => {
+        socket.on("deleteRoom", () => {
+            socket.emit('leaveRoom', room);
+            document.location.reload(true);
+            window.location.replace('/');
+            alert('Creator of the room deleted him');
+        });
+
+    }, []);
 
     useEffect(() => {
         socket.on("rooms", (rooms) => {
@@ -99,6 +119,7 @@ const Chat = ({ location }) => {
         e.preventDefault();
 
         if(message) {
+            setSeconds(0);
             socket.emit('sendMessage', message, () => setMessage(''));
         }
     }

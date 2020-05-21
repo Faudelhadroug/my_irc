@@ -8,12 +8,13 @@ import RoomsContainer from '../RoomsContainer/RoomsContainer';
 let socket;
 
 const Join = () => {
+
     const [name, setName] = useState('');
     const [room, setRoom] = useState('');
     const [rooms, setRooms] = useState('');
     const server = 'localhost:5000';
+    socket = io(server);
     useEffect(() => {
-        socket = io(server);
         socket.emit('getRooms', () => '');
     }, [server]);
 
