@@ -22,6 +22,7 @@ io.on('connection', (socket) => {
         const found = usersOnServers.some(user => user.name === name);
         if (found === false  && putRooms.includes(user.room) === true)
         {
+            io.emit('message', {user: 'admin', text: `the room '${user.room}' get created`});
             myUser = {id: socket.id, name: name.trim().toLowerCase(), room: room.trim().toLowerCase(), admin: false}
             usersOnServers.push(myUser);
         }
@@ -65,6 +66,7 @@ io.on('connection', (socket) => {
             myUser = {id: find.id, name: find.name.trim().toLowerCase(), room: room.trim().toLowerCase(), admin: false}
             usersOnServers.push(myUser);
         }
+        io.emit('message', {user: 'admin', text: `the room '${room}' get created`});
         socket.emit('message', {user: 'admin', text: `${find.name}, welcome to the room ${room}`});
         socket.broadcast.to(room).emit('message', { user: 'admin', text: `${find.name}, has joined`});
         putRooms.push(room);
@@ -146,7 +148,7 @@ io.on('connection', (socket) => {
        
     // });
     socket.on('deleteChannel', ({room}, callback) => {
-
+        io.emit('message', {user: 'admin', text: `the room '${room}' has been deleted`});
         io.to(room).emit('deleteRoom');
 
         for (let i = putRooms.length - 1; i >= 0; i--) {
