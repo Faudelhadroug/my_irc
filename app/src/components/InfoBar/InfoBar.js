@@ -37,7 +37,9 @@ const InfoBar = ({ room, rooms, users, name, server }) => {
                     }
                 });
                 setNewNameRoom('');
+                /* eslint-disable */
                 var inputRenameRoom = document.getElementById('renameRoomInput').value='';
+                /* eslint-enable */
             }
             
         }
@@ -47,6 +49,7 @@ const InfoBar = ({ room, rooms, users, name, server }) => {
 
 
     }, [newNameRoom])
+
     var admin = false;
     for (let i = 0; i < users.length; i++) {
 

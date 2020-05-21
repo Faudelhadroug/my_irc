@@ -117,6 +117,34 @@ io.on('connection', (socket) => {
         callback();
     });
 
+    socket.on('renameUser', ({room , name, newName}, callback) => {
+
+        usersOnServers.forEach((el) => el.name === name.trim().toLowerCase() ?  el.name = newName.trim().toLowerCase() : null );
+        io.emit('message', {user: 'admin', text: `${name} renamed himself to ${newName}`});
+        usersOnServers.forEach( (el) => {
+            if( el.name === newName )
+            {
+                usersRoom = [];
+                usersOnServers.forEach((elem) => {
+                    if(elem.room === el.room)
+                    {
+                        usersRoom.push(elem)
+                    }
+                });
+                io.to(el.room).emit('roomData', { room: el.room, users: usersRoom})
+                io.to(el.room).emit('newName', { oldName: name.trim().toLowerCase(), newName: newName });
+            }
+        });
+        
+        callback();
+       
+    });
+    // socket.on('sendRenameMsgAll', (name, newName, callback) => {
+
+    //     io.emit('message', {user: 'admin', text: `${name} renamed himself to ${newName}`});
+    //     callback();
+       
+    // });
     socket.on('deleteChannel', ({room}, callback) => {
 
         io.to(room).emit('deleteRoom');
@@ -129,15 +157,18 @@ io.on('connection', (socket) => {
         callback();
        
     });
+
     socket.on('leaveRoom', (room) => {
-        console.log(room)
+        // console.log(room)
         socket.leave(room);
     });
+
     socket.on('joinRoom', (room) => {
-        console.log(room);
+        // console.log(room);
         socket.join(room);
        
     });
+    
     socket.on('disconnect', () => {
         const user = removeUser(socket.id);
         if(user){

@@ -3,7 +3,7 @@ const users = [];
 const addUser = ({ id, name, room}) => {
     name = name.trim().toLowerCase();
     room = room.trim().toLowerCase();
-    console.log(users);
+    //console.log(users);
     const existingUser = users.find((user) => user.name === name);
     if(existingUser) {
         return { error: 'Username is taken'};

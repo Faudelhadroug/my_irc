@@ -22,7 +22,7 @@ const Chat = ({ location }) => {
     const [messages, setMessages] = useState([]);
     const server = 'localhost:5000';
     const chatMessages = document.querySelector('.chat-messages');
-    const renamedRoom = false;
+
     useEffect(() => {
         
         const {name, room} = queryString.parse(location.search)
@@ -84,7 +84,16 @@ const Chat = ({ location }) => {
         socket.on("roomData", ({ users }) => {
             setUsers(users);
         });
-    }, [users]);
+        socket.on("newName", ( {oldName, newName} ) => {
+            if (name.trim().toLowerCase() === oldName )
+            {
+                setName(newName);
+            }
+            // console.log(messages);
+            // messages.forEach((el, index) => el.user === oldName ? messages.splice(index, 1) : null );
+            // socket.emit('sendRenameMsgAll', oldName, newName);
+        });
+    }, [users, name, messages]);
     
     const sendMessage = (e) => {
         e.preventDefault();
@@ -93,12 +102,11 @@ const Chat = ({ location }) => {
             socket.emit('sendMessage', message, () => setMessage(''));
         }
     }
-
     return (
        <div>
            <div>
-                <ChangeUsername name={name} room={room} />
-                <CreateChannel server={server} rooms={room}/>
+                <ChangeUsername name={name} room={room} server={server} />
+                <CreateChannel server={server} rooms={room} />
                 <InfoBar room={room} rooms={rooms} users={users} name={name} server={server} />
                 <Messages messages={messages} name={name} />
                 <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
