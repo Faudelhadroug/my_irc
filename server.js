@@ -54,27 +54,25 @@ io.on('connection', (socket) => {
     });
 
     socket.on('addChannel', ({name, room}, callback) => {
-        const findId = usersOnServers.find(user => user.name.trim().toLowerCase() === name.trim().toLowerCase());
-        const { error, user } = addUser({ id: findId.id, name, room});
-        if(error) return callback(error);
-        if(putRooms.includes(user.room) === false)
+        const find = usersOnServers.find(user => user.name.trim().toLowerCase() === name.trim().toLowerCase());
+        if(putRooms.includes(find.room) === false)
         {
-            myUser = {id: findId.id, name: name.trim().toLowerCase(), room: room.trim().toLowerCase(), admin: true}
+            myUser = {id: find.id, name: find.name.trim().toLowerCase(), room: room.trim().toLowerCase(), admin: true}
             usersOnServers.push(myUser);
         }
         else
         {
-            myUser = {id: findId.id, name: name.trim().toLowerCase(), room: room.trim().toLowerCase(), admin: false}
+            myUser = {id: find.id, name: find.name.trim().toLowerCase(), room: room.trim().toLowerCase(), admin: false}
             usersOnServers.push(myUser);
         }
-        socket.emit('message', {user: 'admin', text: `${user.name}, welcome to the room ${user.room}`});
-        socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name}, has joined`});
-        putRooms.push(user.room);
+        socket.emit('message', {user: 'admin', text: `${find.name}, welcome to the room ${room}`});
+        socket.broadcast.to(room).emit('message', { user: 'admin', text: `${find.name}, has joined`});
+        putRooms.push(room);
         const setRooms = new Set(putRooms);
         const rooms = [...setRooms];
         var usersRoom = [];
-        usersOnServers.forEach((el) => el.room === user.room ?  usersRoom.push(el) : null );
-        io.to(user.room).emit('roomData', { room: user.room, users: usersRoom});
+        usersOnServers.forEach((el) => el.room === room ?  usersRoom.push(el) : null );
+        io.to(room).emit('roomData', { room: room, users: usersRoom});
         io.sockets.emit('rooms',  rooms);
         callback();
     });
