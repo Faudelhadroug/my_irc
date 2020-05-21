@@ -27,7 +27,8 @@ const Message = ({ message: { user, text }, name}) => {
               <div className="messageBox backgroundLight">
                 <p className="messageText colorDark">{ReactEmoji.emojify(text)}</p>
               </div>
-              <p className="sentText pl-10 ">{user}</p>
+              {user === 'admin' ? <p className="sentText pl-10 text-danger">{user}</p> : <p className="sentText pl-10 ">{user}</p>}
+             
             </div>
         )
     )

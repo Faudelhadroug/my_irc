@@ -151,6 +151,9 @@ io.on('connection', (socket) => {
             const setRooms = new Set(putRooms);
             const rooms = [...setRooms];
             io.sockets.emit('rooms',  rooms)
+            var usersRoom = [];
+            usersOnServers.forEach((el) => el.room === user.room ?  usersRoom.push(el) : null );
+            io.to(user.room).emit('roomData', { room: user.room, users: usersRoom });
         }
     });
     
