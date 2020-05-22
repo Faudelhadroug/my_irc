@@ -7,7 +7,7 @@ const ChangeUsername = ({ name, room, socket }) => {
 
     const [newName, setNewName] = useState('');
     const renameUser = () => {
-        socket.emit('renameUser', { room, name, newName }, (error) => {
+        socket.emit('renameUser', { room, name, newName}, (error) => {
             if(error) {
                 alert(error);
             }

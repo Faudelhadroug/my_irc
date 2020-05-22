@@ -23,6 +23,7 @@ const Chat = ({ location }) => {
     const server = 'localhost:5000';
     const chatMessages = document.querySelector('.chat-messages');
     const [seconds, setSeconds] = useState(0);
+    
     if(seconds === 300)
     {
         socket.emit('deleteChannel', { room } , (error) => {
@@ -38,7 +39,7 @@ const Chat = ({ location }) => {
         }, 1000);
         return () => clearInterval(interval);
       }, [seconds]);
-      console.log(seconds);
+      //console.log(seconds);
     useEffect(() => {
         
         const {name, room} = queryString.parse(location.search)
@@ -52,6 +53,7 @@ const Chat = ({ location }) => {
                 window.location.replace("/");
             }
         });
+        
         return () => {
             document.location.reload(true);
             socket.emit('disconnect');
@@ -83,15 +85,20 @@ const Chat = ({ location }) => {
             //window.location.replace(`/chat?name=${name}&room=${renamedRoom}`);
         });
     }, [room, rooms]);
-
+   
     useEffect(() => {
+        
+        //const {name} = queryString.parse(location.search)
+        console.log(name);
         socket.on("deleteRoom", () => {
+            let url = '/room?name='+name;
+            console.log(url);
             socket.emit('leaveRoom', room);
-            document.location.reload(true);
-            window.location.replace('/');
-            alert('Creator of the room deleted him');
+            //document.location.reload(true);
+            //window.location = url;
+            alert('Room got deleted');
         });
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -104,11 +111,15 @@ const Chat = ({ location }) => {
         socket.on("roomData", ({ users }) => {
             setUsers(users);
         });
-        socket.on("newName", ( {oldName, newName} ) => {
-            if (name.trim().toLowerCase() === oldName )
-            {
-                setName(newName);
-            }
+        socket.on("newName", ( {oldName, newName, room} ) => {
+            console.log('newName')
+            document.location.reload(true)
+            socket.emit('sendRenameRoomAll', oldName, newName, room)
+            window.location.replace(`/chat?name=${newName}&room=${room}`); 
+            // if (name.trim().toLowerCase() === oldName )
+            // {
+            //     setName(newName);
+            // }
             // console.log(messages);
             // messages.forEach((el, index) => el.user === oldName ? messages.splice(index, 1) : null );
             // socket.emit('sendRenameMsgAll', oldName, newName);
