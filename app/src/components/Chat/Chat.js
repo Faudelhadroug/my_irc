@@ -93,13 +93,11 @@ const Chat = ({ location }) => {
         //const {name} = queryString.parse(location.search)
         //console.log(name);
         socket.on("deleteRoom", () => {
-            let url = '/room?name='+name;
-            console.log(url);
+
             socket.emit('leaveRoom', room);
             document.location.reload(true);
             window.location.replace("/");
-            //window.location = url;
-            //alert('Room got deleted');
+            alert('Room got deleted');
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -199,10 +197,15 @@ const Chat = ({ location }) => {
                     window.location.replace("/");  
                 break;
                 case '/users':
-                    console.log('join');    
+                    console.log('lol')
+                    users.map(({ name }) => (
+                        <div key={ name }>
+                          { name }
+                        </div>
+                      ))
                 break;
                 case '/msg':
-                    console.log('join');    
+                        
                 break;
                 default:
                     console.log('unknow command')
