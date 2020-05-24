@@ -52,7 +52,7 @@ io.on('connection', (socket) => {
         usersOnServers.forEach((el) => el.room === user.room ?  usersRoom.push(el) : null );
         io.to(user.room).emit('roomData', { room: user.room, users: usersRoom });
         io.sockets.emit('rooms',  rooms);
-        
+        io.emit('usersOnServer', usersOnServers);
         callback();
     });
 
@@ -77,12 +77,15 @@ io.on('connection', (socket) => {
         var usersRoom = [];
         usersOnServers.forEach((el) => el.room === room ?  usersRoom.push(el) : null );
         io.to(room).emit('roomData', { room: room, users: usersRoom});
+        io.emit('usersOnServer', usersOnServers);
         io.sockets.emit('rooms',  rooms);
         callback();
     });
 
-    socket.on('sendMessage', (message, callback) => {
+    socket.on('sendMessage', (message, room, callback) => {
        // console.log(io.sockets.adapter.rooms);
+        //console.log(message);
+        //console.log(room.trim().toLowerCase());
         const find = usersOnServers.find(user => user.id === socket.id);
         const user = find;
         socket.id = user.id;
@@ -208,8 +211,7 @@ io.on('connection', (socket) => {
             var usersRoom = [];
             usersOnServers.forEach((el) => el.room === user.room ?  usersRoom.push(el) : null );
             io.to(user.room).emit('roomData', { room: user.room, users: usersRoom });
-
-
+            io.emit('usersOnServer', usersOnServers);
         }
     });
     

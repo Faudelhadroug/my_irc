@@ -13,6 +13,8 @@ import ChangeUsername from '../ChangeUsername/ChangeUsername';
 import CreateChannel from '../CreateChannel/CreateChannel';
 
 let socket;
+let usersOnServer = [];
+
 const Chat = ({ location }) => {
     const [name, setName] = useState('');
     const [room, setRoom] = useState('');
@@ -64,6 +66,7 @@ const Chat = ({ location }) => {
     useEffect(() => {
         socket.on('message', (message) => {
             setMessages([...messages, message]);
+            //console.log(messages);
             if(chatMessages !== null)
                 chatMessages.scrollTop = chatMessages.scrollHeight;
         });
@@ -86,19 +89,26 @@ const Chat = ({ location }) => {
         });
     }, [room, rooms]);
    
-    useEffect(() => {
-        
+    useEffect(() => {  
         //const {name} = queryString.parse(location.search)
-        console.log(name);
+        //console.log(name);
         socket.on("deleteRoom", () => {
             let url = '/room?name='+name;
             console.log(url);
             socket.emit('leaveRoom', room);
-            //document.location.reload(true);
+            document.location.reload(true);
+            window.location.replace("/");
             //window.location = url;
-            alert('Room got deleted');
+            //alert('Room got deleted');
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        socket.on("usersOnServer", (getUsers) => {
+            usersOnServer = getUsers;
+            console.log(usersOnServer);
+        });
     }, []);
 
     useEffect(() => {
@@ -128,10 +138,81 @@ const Chat = ({ location }) => {
     
     const sendMessage = (e) => {
         e.preventDefault();
+        console.log(message.charAt(0) === '/');
+        var messageSplit = message.split(' ');
+       
+        
+        if(message.charAt(0) === '/')
+        {
+            switch(messageSplit[0])
+            {
+                case '/nick':
+                    //console.log(name);
+                    if(messageSplit[1] !== undefined && messageSplit[1] !== '' && messageSplit[1] !== ' ')
+                    {
+                        var newName =  messageSplit[1];
+                        socket.emit('renameUser', { room, name, newName}, (error) => {
+                            if(error) {
+                                alert(error);
+                            }
+                        });
+                    }
+                    else
+                    {
+                        alert('/nick [new name]');
+                    }
+                    console.log(messageSplit[1]);
+                break;
+                case '/list':
+                    console.log('list ');
+                break;
+                case '/create':
+                    console.log('join');    
+                break;
+                case '/delete':
+                    var admin = false;
+                    for (let i = 0; i < users.length; i++) {
 
-        if(message) {
+                        if(users[i].name === name.trim().toLowerCase() && users[i].admin === true)
+                        {
+                            admin = true;
+                        }
+                    }
+                    if(admin === true)
+                    {
+                        socket.emit('deleteChannel', { room } , (error) => {
+                            if(error) {
+                                alert(error);
+                            }
+                        });
+                    }
+                    else
+                    {
+                        alert('you need to be admin to delete the room');
+                    }
+    
+                break;
+                case '/join':
+                    console.log('join');    
+                break;
+                case '/part':
+                    window.location.replace("/");  
+                break;
+                case '/users':
+                    console.log('join');    
+                break;
+                case '/msg':
+                    console.log('join');    
+                break;
+                default:
+                    console.log('unknow command')
+
+            }
+        }
+        else if(message) {
+            console.log('sendedmessage');
             setSeconds(0);
-            socket.emit('sendMessage', message, () => setMessage(''));
+            socket.emit('sendMessage', message, room, () => setMessage(''));
         }
     }
     return (
@@ -139,7 +220,7 @@ const Chat = ({ location }) => {
            <div>
                 <ChangeUsername name={name} room={room} socket={socket} />
                 <CreateChannel rooms={room} socket={socket}/>
-                <InfoBar room={room} rooms={rooms} users={users} name={name} socket={socket} />
+                <InfoBar usersOnServer={usersOnServer} room={room} rooms={rooms} users={users} name={name} socket={socket} />
                 <Messages messages={messages} name={name} />
                 <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
            </div>

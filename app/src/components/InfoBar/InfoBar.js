@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import './InfoBar.css';
 
-const InfoBar = ({ room, rooms, users, name, socket }) => {
+const InfoBar = ({ usersOnServer, room, rooms, users, name, socket }) => {
     const [newNameRoom, setNewNameRoom] = useState('');
-
     const deleteRoom = () => {
         socket.emit('deleteChannel', { room } , (error) => {
             if(error) {
@@ -40,10 +39,6 @@ const InfoBar = ({ room, rooms, users, name, socket }) => {
         }
 
     }
-    useEffect(() => {
-
-
-    }, [newNameRoom])
 
     var admin = false;
     for (let i = 0; i < users.length; i++) {
@@ -53,12 +48,14 @@ const InfoBar = ({ room, rooms, users, name, socket }) => {
             admin = true;
         }
     }
+//<h3 className='d-flex justify-content-center mt-5'>Others room: { usersOnServer.forEach((el) => el.name.trim().toLowerCase() === name.trim().toLowerCase() && el.room.trim().toLowerCase() !== room.trim().toLowerCase() ?el.room : console.log(name, ' -- ', room, ' ---- ',el.room) )}</h3>
     return(
         admin
         ? (
             <div>
             <div>
                 <h3 className='d-flex justify-content-center mt-5'>Actual room: { room }</h3>
+                
             </div>
             <div>
                 <h4>Settings of the room</h4>
